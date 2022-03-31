@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIcode</title>
+    <link rel="stylesheet" href="./css/UIcode.css">
+    <script src="./js/react.development.js"></script>
+    <script src="./js/react-dom.development.js"></script>
+    <script src="./js/browser.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+        class Currency extends React.Component {
+            constructor() {
+                super()
+                this.state={
+                    //currencyPair必须为六位英文字母，自动转大写
+                    currencyPair:"EURUSD",
+                    currency1:'',
+                    currency2:'',
+                    currency1Amount:'',
+                    currency2Amount:'',
+                    clientRate:1,
+                    btnState:null,
+                    //提示
+                    tips1Flag:false,
+                    tips2Flag:false,
+                    tips3Flag:false,
+                    opacity:.5
+                }
+                this.changePair=this.changePair.bind(this)
+                this.changeCurrency1Amount=this.changeCurrency1Amount.bind(this)
+                this.changeClientRate=this.changeClientRate.bind(this)
+                this.onSubmit=this.onSubmit.bind(this)
+                this.original=this.original.bind(this)
+            }
+            //改变currencyPair
+            changePair(e) {
+                this.setState({currencyPair:e.target.value})
+            }
+            //改变currency1的金额
+            changeCurrency1Amount(e) {
+                this.setState({currency1Amount:e.target.value})
+            }
+            //改变clientRate
+            changeClientRate(e) {
+                this.setState({clientRate:e.target.value})
+            }
+            //提交
+            onSubmit() {
+                if(this.state.currency2Amount > Math.pow(10, 9)) {
+                    alert("submit failed")
+                }else alert("submit successfully")
+                //回到原来的页面状态
+                this.original()
+            }
+            original() {
+                this.setState({
+                    currencyPair:"EURUSD",
+                    currency1:'',
+                    currency2:'',
+                    currency1Amount:'',
+                    currency2Amount:'',
+                    clientRate:1,
+                    btnState:null,
+                    //提示
+                    tips1Flag:false,
+                    tips2Flag:false,
+                    tips3Flag:false,
+                    opacity:.5
+                })
+            }
+            static getDerivedStateFromProps(props,state) {
+                //currencyPair处理出currency1和currency2
+                let { currencyPair, currency1Amount, currency2Amount, clientRate, btnState, tips1Flag, tips2Flag, tips3Flag, opacity} = state;
+                // currencyPair应为六位英文字母
+                const reg = /^[a-z]{6}$/i
+                tips1Flag = reg.test(currencyPair)
+                //如果currencyPair符合条件 则全部转成大写
+                if(tips1Flag) currencyPair = currencyPair.toUpperCase()
+                const  currency1 = currencyPair.substring(0,3)
+                const  currency2 = currencyPair.substring(3,6)
+                if(currency1Amount>0) {
+                    currency2Amount = (currency1Amount * clientRate).toFixed(2);
+                }
+                //提交按钮是否激活
+                //条件clientRate为大于0的数字，currency1Amount为大于0的数字
+                tips2Flag = Number(currency1Amount) > 0 ? true : false;
+                tips3Flag = Number(clientRate) > 0 ? true : false;
+                if(tips1Flag && tips2Flag && tips3Flag) {
+                    btnState=null;
+                    opacity=1
+                }else {
+                    btnState=true;
+                    opacity=.5
+                }
+                return {
+                    currencyPair,
+                    clientRate,
+                    currency1,
+                    currency2,
+                    currency1Amount,
+                    currency2Amount,
+                    btnState,
+                    tips1Flag,
+                    tips2Flag,
+                    tips3Flag,
+                    //按钮透明度
+                    opacity,
+                }
+            }
+            componentDidMount() {
+                console.log('state',this.state);
+                console.log('of',typeof(this.state.clientRate));
+            }
+            render() {
+                const {currencyPair, currency1, currency2, currency1Amount, currency2Amount, clientRate, btnState, tips1Flag, tips2Flag, tips3Flag, opacity} = this.state;
+                return (
+                    <React.Fragment>
+                        <div className="bg"></div>
+                        <div className="container">
+                            <div className="header">
+                                <input type="text" value={currencyPair} onChange={this.changePair}/>
+                                
+                                {
+                                    tips1Flag? null:<span className="tips tips1">请输入六个表示汇率转换的英文字母</span>
+                                }
+                                
+                            </div>
+                            <div className="main">
+                                <div className="left-block">
+                                    <p className="currency">
+                                        <label htmlFor="currency1">{currency1}</label>
+                                        <input type="text" id="currency1" value={currency1Amount} onChange={this.changeCurrency1Amount}/>
+
+                                        {
+                                            tips2Flag? null : <span className="tips tips2">请输入大于0的金额</span>
+                                        }
+                                    </p>
+                                    <p className="currency">
+                                        <label htmlFor="currency2">{currency2}</label>
+                                        <input type="text" id="currency2" value={currency2Amount} disabled/>
+                                    </p>
+                                </div>
+                                <div className="right-block">
+                                    <p className="client-rate-box">
+                                        <label htmlFor="client-rate">client&nbsp;Rate</label>
+                                        <input type="text" id="client-rate" value={clientRate} onChange={this.changeClientRate}/>
+                                        {
+                                            tips3Flag? null: <span className="tips tips3">请输入大于0的数字表示当前汇率</span>
+                                        }
+                                        
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="footer">
+                                <button className="submit" disabled={btnState} onClick={this.onSubmit} style={{opacity:opacity}}>Submit</button>
+                            </div>
+                        </div>
+                    </React.Fragment>
+                )
+            }
+        }
+        ReactDOM.render(
+            <Currency></Currency>,
+            document.querySelector('#app')
+        )
+    </script>
+</body>
+
+</html>
