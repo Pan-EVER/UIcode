@@ -115,10 +115,7 @@
                     opacity,
                 }
             }
-            componentDidMount() {
-                console.log('state',this.state);
-                console.log('of',typeof(this.state.clientRate));
-            }
+            
             render() {
                 const {currencyPair, currency1, currency2, currency1Amount, currency2Amount, clientRate, btnState, tips1Flag, tips2Flag, tips3Flag, opacity} = this.state;
                 return (
