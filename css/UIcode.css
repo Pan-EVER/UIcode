@@ -42,8 +42,10 @@ button {
   flex: 1;
   display: flex;
   align-items: center;
-  position: relative;
   margin-left: var(--leftmargin);
+}
+#app .container .header .header-input {
+  position: relative;
 }
 #app .container .header input {
   font-size: 24px;
@@ -114,7 +116,8 @@ button {
   color: red;
 }
 #app .container .tips1 {
-  bottom: 4px;
+  left: 0;
+  bottom: -18px;
 }
 #app .container .tips2 {
   left: 0;

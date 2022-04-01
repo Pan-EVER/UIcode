@@ -16,51 +16,60 @@
     <div id="app"></div>
 
     <script type="text/babel">
+        //提示组件
+        function Tip(props) {
+            const {className} = props;
+            return (
+                <span className={className}>{props.children}</span>
+            )
+        }
+        //增强的输入框组件
+        function InputPlus(props) {
+            const {className, inputId=null, value, onChange=null, tipsShow=false, labelText=null,disabled=null} = props;
+            return (
+                <p className={className}>
+                    {
+                        labelText? <label htmlFor={inputId}>{labelText}</label>:null
+                    }
+                    <input type="text" id={inputId} value={value} onChange={onChange} disabled={disabled}/>
+                    {
+                        tipsShow? null : props.children
+                    }
+                </p>
+            )
+        }
         //头部组件
         function Header(props) {
             const {currencyPair,changePair, tipsShow } = props;
             return (
                 <div className="header">
-                    <input type="text" value={currencyPair} onChange={changePair}/>
-                    
-                    {
-                        tipsShow? null:<span className="tips tips1">请输入六个表示汇率转换的英文字母</span>
-                    }
+                    <InputPlus className="header-input" value={currencyPair} onChange={changePair} tipsShow={tipsShow}>
+                            <Tip className="tips tips1">请输入六个表示汇率转换的英文字母</Tip>
+                    </InputPlus>
                 </div>
             )
         }
-
+        //中间主体组件
         function MainContent(props) {
             const {currency1, currency1Amount, changeCurrency1Amount, tips2Flag, currency2, currency2Amount, clientRate, changeClientRate, tips3Flag} = props;
             return (
                 <div className="main">
                     <div className="left-block">
-                        <p className="currency">
-                            <label htmlFor="currency1">{currency1}</label>
-                            <input type="text" id="currency1" value={currency1Amount} onChange={changeCurrency1Amount}/>
+                        <InputPlus className="currency" inputId="currency1" value={currency1Amount} onChange={changeCurrency1Amount} tipsShow={tips2Flag} labelText={currency1}>
+                            <Tip className="tips tips2">请输入大于0的金额</Tip>
+                        </InputPlus>
 
-                            {
-                                tips2Flag? null : <span className="tips tips2">请输入大于0的金额</span>
-                            }
-                        </p>
-                        <p className="currency">
-                            <label htmlFor="currency2">{currency2}</label>
-                            <input type="text" id="currency2" value={currency2Amount} disabled/>
-                        </p>
+                        <InputPlus className="currency" inputId="currency2" value={currency2Amount} disabled={true} labelText={currency2}></InputPlus>
                     </div>
                     <div className="right-block">
-                        <p className="client-rate-box">
-                            <label htmlFor="client-rate">client&nbsp;Rate</label>
-                            <input type="text" id="client-rate" value={clientRate} onChange={changeClientRate}/>
-                            {
-                                tips3Flag? null: <span className="tips tips3">请输入大于0的数字表示当前汇率</span>
-                            }
-                        </p>
+                        <InputPlus className="client-rate-box" inputId="client-rate" value={clientRate} onChange={changeClientRate} tipsShow={tips3Flag} labelText="client&nbsp;Rate">
+                            <Tip className="tips tips3">请输入大于0的数字表示当前汇率</Tip>
+                        </InputPlus>
                     </div>
                 </div>
             )
         }
-
+        //底部组件
         function Footer(props) {
             const { btnState, onSubmit, opacity } = props;
             return (
@@ -114,6 +123,7 @@
                 //回到原来的页面状态
                 this.original()
             }
+            //回到原来的页面状态
             original() {
                 this.setState({
                     currencyPair:"EURUSD",
@@ -172,7 +182,6 @@
             
             render() {
                 const {currencyPair, currency1, currency2, currency1Amount, currency2Amount, clientRate, btnState, tips1Flag, tips2Flag, tips3Flag, opacity} = this.state;
-                //const {currency1, currency1Amount, changeCurrency1Amount, tips2Flag, currency2, currency2Amount, clientRate, changeClientRate, tips3Flag} = props;
                 return (
                     <React.Fragment>
                         <div className="bg"></div>

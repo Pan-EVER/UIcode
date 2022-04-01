@@ -41,8 +41,11 @@ button {
             flex: 1;
             display: flex;
             align-items: center;
-            position: relative;
             margin-left: var(--leftmargin);
+
+            .header-input {
+                position: relative;
+            }
 
             input {
                 font-size: 24px;
@@ -126,7 +129,8 @@ button {
             color: red;
         }
         .tips1 {
-            bottom:4px;
+            left: 0;
+            bottom:-18px;
         }
         .tips2 {
             left:0;
